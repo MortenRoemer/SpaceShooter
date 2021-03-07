@@ -13,7 +13,6 @@ public class PlayerBehavior : MonoBehaviour
     public float shootFrequency = 1.0f;
     public Vector3 lookTarget;
 
-    public Text mousepositionTextBox;
 
     void Start()
     {
