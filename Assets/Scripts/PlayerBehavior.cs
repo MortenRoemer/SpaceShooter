@@ -13,7 +13,6 @@ public class PlayerBehavior : MonoBehaviour
     public float shootFrequency = 1.0f;
     public Vector3 lookTarget;
 
-    public Text mousepositionTextBox;
 
     void Start()
     {
@@ -40,7 +39,14 @@ public class PlayerBehavior : MonoBehaviour
         }
 
         var mousePosition = Input.mousePosition;
-        mousepositionTextBox.text = mousePosition.ToString();
-        transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - mousePosition);
+        mousePosition.z = 0;
+
+        var position = transform.position;
+        Vector3 objectPos = Camera.main.WorldToScreenPoint(position);
+
+        mousePosition.x = mousePosition.x - objectPos.x;
+        mousePosition.y = mousePosition.y - objectPos.y;
+
+        transform.rotation = Quaternion.LookRotation(Vector3.back, mousePosition - position);
     }
 }

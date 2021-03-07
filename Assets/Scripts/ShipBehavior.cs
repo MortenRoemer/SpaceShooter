@@ -9,33 +9,31 @@ public class ShipBehavior : MonoBehaviour
 {
     public GameObject bullet;
     public float accelerationPower = 1.0f;
-    public float health = 100.0f;
+    public float health;
     public float bulletSpeed = 5.0f;
-        
+    public float maxHealth;
+
     private Rigidbody2D body;
     private new Transform transform;
-    
-    
-    // Start is called before the first frame update
+
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
         transform = base.transform;
+        Reset();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.collider.TryGetComponent<BulletBehavior>(out var bulletBehavior))
             return;
-        
+
         Damage(bulletBehavior.damage);
-        GameObject.Destroy(bulletBehavior.gameObject);
+        Destroy(bulletBehavior.gameObject);
     }
 
     public void Move(Vector2 direction)
@@ -47,14 +45,23 @@ public class ShipBehavior : MonoBehaviour
     public void Damage(float damage)
     {
         health -= damage;
-        
+
         if (health <= 0.0f)
-            GameObject.Destroy(gameObject);
+            gameObject.SetActive(false);
     }
 
     public void Shoot(Vector2 direction)
     {
-        var bulletInstance = GameObject.Instantiate(bullet, transform.position + new Vector3(transform.localScale.x / 2, 0, 0), Quaternion.identity);
-        bulletInstance.GetComponent<BulletBehavior>().direction = Vector2.right * bulletSpeed;
+        var bulletInstance = Instantiate(bullet, transform.position, Quaternion.identity);
+        var bulletBehavior = bulletInstance.GetComponent<BulletBehavior>();
+
+        bulletBehavior.direction = transform.up.IgnoreZ() * bulletSpeed + body.velocity;
+
+        bulletBehavior.Move(transform.localScale.y / 2);
+    }
+
+    public void Reset()
+    {
+        health = maxHealth;
     }
 }
